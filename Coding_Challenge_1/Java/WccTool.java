@@ -1,5 +1,3 @@
-//type man wc in terminal for more info
-
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.io.BufferedReader;
@@ -9,18 +7,39 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+//app to model the wc unix terminal command
+
 public class WccTool {
     public static void main(String args[]) {
         String filepath = "/home/zemanparis/Downloads/Projects/SampleProjects/test.txt";
-        System.out.print(countLines(filepath) + " ");
-        System.out.print(countWords(filepath) + " ");
-        System.out.print(printFileSize(filepath) + " ");
-        System.out.print(filepath.substring(filepath.indexOf('.')-4)+" ");
-        System.out.println();
-        // System.out.print(countCharacters(filepath) + " ");
-
-    //Fina output format if no parameter specified
-        // Length, words, bytes, filename
+        if (args.length==0){
+            System.out.print(countLines(filepath) + " ");
+            System.out.print(countWords(filepath) + " ");
+            System.out.print(printFileSize(filepath) + " ");
+            System.out.print(filepath.substring(filepath.indexOf('.')-4)+" ");
+            System.out.println();
+        }
+        // Reading the parameters from command line
+        else{
+        String parametersPassed = args[0];
+        switch (parametersPassed) {
+            case "-c":
+            System.out.println(printFileSize(filepath));
+                break;
+            case "-l":
+            System.out.println(countLines(filepath));
+                break;
+            case "-w":
+            System.out.println(countWords(filepath));
+                break;
+            case "-m":
+            System.out.println(countCharacters(filepath));
+                break;
+            default:
+            System.out.println(parametersPassed);
+            break;
+        }
+        }
     }
 
     public static long printFileSize(String file) {

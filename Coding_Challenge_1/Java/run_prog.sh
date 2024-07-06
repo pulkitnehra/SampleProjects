@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar ccwc_app.jar
+java -jar ccwc.jar
