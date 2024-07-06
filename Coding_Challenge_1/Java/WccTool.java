@@ -6,46 +6,121 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 //app to model the wc unix terminal command
 
 public class WccTool {
     public static void main(String args[]) {
-        String filepath = "/home/zemanparis/Downloads/Projects/SampleProjects/test.txt";
-        if (args.length==0){
-            System.out.print(countLines(filepath) + " ");
-            System.out.print(countWords(filepath) + " ");
-            System.out.print(printFileSize(filepath) + " ");
-            System.out.print(filepath.substring(filepath.indexOf('.')-4)+" ");
-            System.out.println();
-        }
         // Reading the parameters from command line
-        else{
-        String parametersPassed = args[0];
-        switch (parametersPassed) {
+        if (args.length == 0) {
+            // No arguments provided, read from standard input
+            handleStandardInput("-all", false);
+        } else {
+            String option = null;
+            String filepath = null;
+            // Parse the arguments to find the option and filepath
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].startsWith("-")) {
+                    option = args[i];
+                } else {
+                    filepath = args[i];
+                }
+            }
+
+            // Validate and handle based on the found option and filepath
+            if (option != null && filepath != null) {
+                // Option and filename provided
+                handleOption(option, filepath, true);
+            } else if (option != null) {
+                // Only an option provided, read from standard input
+                handleStandardInput(option, false);
+            } else if (filepath != null) {
+                // Only a filename provided, execute all methods by default
+                printAllMethods(filepath, true);
+            } else {
+                System.out.println("Invalid arguments provided. Usage: java WccTool <option> <filename>");
+            }
+        }
+    }
+
+    public static void handleStandardInput(String input, boolean printFileName) {
+        // Check if input is a valid option or a filename
+        if (input.startsWith("-")) {
+            // Handle reading from standard input with the specified option
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+                String line;
+                StringBuilder content = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                // Create a temporary file to process the content
+                File tempFile = File.createTempFile("tempfile", ".txt");
+                tempFile.deleteOnExit();
+
+                try (PrintWriter writer = new PrintWriter(tempFile)) {
+                    writer.write(content.toString());
+                }
+
+                // Perform action based on option
+                handleOption(input, tempFile.getAbsolutePath(), printFileName);
+
+            } catch (IOException e) {
+                System.out.println("Error reading from standard input: " + e.getMessage());
+            }
+        }
+    }
+
+    public static void handleOption(String option, String filepath, boolean printFileName) {
+        switch (option) {
             case "-c":
-            System.out.println(printFileSize(filepath));
+                System.out.println(printFileSize(filepath));
                 break;
             case "-l":
-            System.out.println(countLines(filepath));
+                System.out.println(countLines(filepath));
                 break;
             case "-w":
-            System.out.println(countWords(filepath));
+                System.out.println(countWords(filepath));
                 break;
             case "-m":
-            System.out.println(countCharacters(filepath));
+                System.out.println(countCharacters(filepath));
+                break;
+            case "-all":
+                printAllMethods(filepath, printFileName);
                 break;
             default:
-            System.out.println(parametersPassed);
-            break;
+                System.out.println("Unsupported option for standard input: " + option);
+                break;
         }
+    }
+
+    // Check if the filename has an extension
+    public static boolean hasValidFileExtension(String filename) {
+        if (filename.lastIndexOf(".") != -1 && filename.lastIndexOf(".") != 0) {
+            String extension = filename.substring(filename.lastIndexOf(".") + 1);
+            return extension.matches("txt|csv"); // Add more extensions as needed
         }
+        return false;
+    }
+
+    public static void printAllMethods(String filepath, boolean printFileName) {
+        System.out.print(countLines(filepath) + " ");
+        System.out.print(countWords(filepath) + " ");
+        System.out.print(printFileSize(filepath) + " ");
+        if (printFileName) {
+            System.out.print(filepath);
+        }
+        System.out.println();
     }
 
     public static long printFileSize(String file) {
         File fileName = new File(file);
+        if (!fileName.exists()) {
+            System.out.println("File " + file + "does not exist.");
+            return -1;
+        }
         return fileName.length();
-        
+
     }
 
     public static long countLines(String file) {
@@ -57,7 +132,7 @@ public class WccTool {
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Error reading file: " + e.getMessage());
         }
         return countlines;
     }
@@ -78,7 +153,7 @@ public class WccTool {
             br.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Error reading file: " + e.getMessage());
         }
         return countWords;
     }
@@ -96,7 +171,7 @@ public class WccTool {
             reader.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Error reading file: " + e.getMessage());
         }
         return countChars;
     }

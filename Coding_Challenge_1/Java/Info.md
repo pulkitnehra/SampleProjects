@@ -13,3 +13,7 @@ cat run_prog.sh cwcc.jar > cwcc && chmod +x cwcc
 ```bash
 sudo cp cwcc /usr/bin
 ```
+
+```bash
+jar cvfm cwcc.jar manifest.txt *.class
+```
