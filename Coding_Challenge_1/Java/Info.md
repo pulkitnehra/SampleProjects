@@ -2,10 +2,10 @@
 ##### 1. navigate to /op folder and run the command #2 to register the script in your system and make it executable systemwide.
 ##### 2. Now type cwcc in your terminal you should see the program running as expected.
 
-###### \nA script run_prog.sh has been provided to make the cwcc.jar file executable as a runnable script. To create a script similar to what is present in the /op/cwcc.sh run the below commands
+###### A script run_prog.sh has been provided to make the cwcc.jar file executable as a runnable script. To create a script similar to what is present in the /op/cwcc.sh run the below commands
 
 
-1. #### command to make the script executable
+1. #### command to make the script executable. Navigate to /Java folder and run the below command in terminal
 ```bash
 cat run_prog.sh cwcc.jar > cwcc && chmod +x cwcc
 ```
